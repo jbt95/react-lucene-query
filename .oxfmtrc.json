@@ -1,0 +1,13 @@
+{
+  "semi": false,
+  "singleQuote": true,
+  "printWidth": 100,
+  "ignorePatterns": [
+    "dist/**",
+    "example-dist/**",
+    "node_modules/**",
+    "bun.lock",
+    "tools/oxlint/anti-slop/**",
+    ".impeccable/**"
+  ]
+}

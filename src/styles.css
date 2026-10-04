@@ -1,0 +1,116 @@
+@layer theme, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme) prefix(rlq);
+@import 'tailwindcss/utilities.css' layer(utilities) prefix(rlq) source(none);
+@source "./styled.tsx";
+
+/* Scoped, unlayered metrics beat generic form resets so caret and mirrored glyphs align. */
+.rlq-field .rlq-text-layer {
+  font:
+    14px / 24px ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  font-variant-ligatures: none;
+  letter-spacing: normal;
+}
+@layer components {
+  .rlq-field {
+    --rlq-surface: #fff;
+    --rlq-text: #172b2a;
+    --rlq-secondary: #526360;
+    --rlq-border: #a4b3af;
+    --rlq-muted: #edf3f1;
+    --rlq-accent: #176452;
+    --rlq-on-accent: #fff;
+    --rlq-error: #b42318;
+    --rlq-field-color: #6d28d9;
+    --rlq-value-color: #166534;
+    --rlq-number-color: #92400e;
+    --rlq-boolean-color: #0369a1;
+    color: var(--rlq-text);
+    font-family: inherit;
+  }
+
+  .rlq-field *,
+  .rlq-field *::before,
+  .rlq-field *::after {
+    box-sizing: border-box;
+  }
+  .rlq-text-layer {
+    grid-area: 1 / 1;
+    margin: 0;
+    min-width: 0;
+    border: 0;
+    padding: 10px 12px;
+    font:
+      14px / 24px ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+    font-variant-ligatures: none;
+    letter-spacing: normal;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+  .rlq-button {
+    min-height: 44px;
+    border: 0;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .rlq-button:hover {
+    filter: brightness(0.94);
+  }
+  .rlq-button:focus-visible {
+    outline: 2px solid var(--rlq-accent);
+    outline-offset: 2px;
+  }
+  .rlq-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+  .rlq-list {
+    margin-left: 0;
+    padding-left: 0;
+    list-style: none;
+  }
+  .rlq-highlight [data-role='field'] {
+    color: var(--rlq-field-color);
+  }
+  .rlq-highlight [data-role='value-text'],
+  .rlq-highlight [data-role='value-enum'] {
+    color: var(--rlq-value-color);
+  }
+  .rlq-highlight [data-role='value-number'],
+  .rlq-highlight [data-role='value-date'],
+  .rlq-highlight [data-role='compare'] {
+    color: var(--rlq-number-color);
+  }
+  .rlq-highlight [data-role='value-boolean'] {
+    color: var(--rlq-boolean-color);
+  }
+  .rlq-highlight [data-role='field-unknown'],
+  .rlq-highlight [data-role='value-invalid'],
+  .rlq-highlight [data-role='unexpected'] {
+    color: var(--rlq-error);
+    text-decoration: underline wavy;
+    text-underline-offset: 3px;
+  }
+  .rlq-highlight [data-placeholder] {
+    color: var(--rlq-secondary);
+  }
+  .rlq-field ::selection {
+    background: #c5e8de;
+  }
+  @media (forced-colors: active) {
+    .rlq-field textarea {
+      color: CanvasText;
+    }
+    .rlq-highlight {
+      visibility: hidden;
+    }
+  }
+}
