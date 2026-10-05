@@ -29,7 +29,7 @@ const rows = await Effect.runPromise(results)
 | `engine.facets(text, records, opts?)`   | `Effect<FacetCounts, InvalidQueryError>`                                             |
 | `engine.clauses(text)`                  | Pure `readonly Clause[]`                                                             |
 
-Errors are `Data.TaggedError` subclasses. Handle expected failures with `Effect.catchTag` or `Effect.result` / `Result.match`; defects such as throwing record accessors are not silently swallowed.
+Errors are tagged subclasses. Handle expected failures with `Effect.catchTag` or `Effect.result` / `Result.match`; defects such as throwing record accessors are not silently swallowed.
 
 Advanced users can import `toQueryEngineAdapter` from `react-lucene-query/core` to reuse an existing Effect engine in React. Normal consumers use only `createQueryEngine` from the main entry. The React adapter catches **only** `InvalidQueryError` when deriving an inert predicate for invalid externally controlled applied state. `engine.facets` is the one deliberate exception on that plain facade: it throws the typed `InvalidQueryError`, because counting values through an inert "matches nothing" predicate would report every option as unavailable, which reads as a real result. React code does not take that path — `Query.Root` counts through the tolerant `compile`.
 
@@ -72,7 +72,7 @@ The client validates successful responses and query rejection responses with Eff
 The command checks filtering, invalid-query rejection at both boundaries, and typed transport failure after server shutdown.
 HTTP status and response validation failures have separate typed errors.
 The request format belongs to the example application.
-The library does not define a backend protocol or SQL translation.
+The library does not define a backend execution protocol. Optional [query output modules](query-outputs.md) provide a versioned JSON representation and conservative PostgreSQL condition translation; adapters still own execution and authorization.
 
 Pure exports also include `tokenize`, `tokenValue`, `parseQuery`, `hasErrors`, `compileQuery`, `tryCompileQuery`, `matchesQuery`, `filterRecords`, `facetCounts`, `listClauses`, `removeClause`, `toggleClause`, `escapeTerm`, `escapeFieldName`, `fieldClause`, `and`, `or`, `not`, `readPath`, `fieldValues`, `parseDate`, `parseNumber`, `getSuggestions`, and `applySuggestion`. Low-level AST evaluators assume already validated input; never execute a partial AST from an invalid query.
 

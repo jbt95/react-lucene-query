@@ -1,5 +1,21 @@
 import { Data } from 'effect'
 
+/** An expected rejection by an output adapter; no backend work has been executed. */
+export class QueryTranslationError extends Data.TaggedError('QueryTranslationError')<{
+  readonly target: 'json' | 'postgres'
+  readonly code:
+    | 'invalid-query'
+    | 'invalid-json'
+    | 'query-limit'
+    | 'unsupported-feature'
+    | 'unmapped-field'
+    | 'invalid-mapping'
+    | 'invalid-value'
+  readonly message: string
+  readonly field?: string
+  readonly feature?: string
+}> {}
+
 /**
  * A clause value or query node outside the domain the query language can express: a fuzzy distance
  * above two, an incomplete escape, a negative proximity, a boost that is not positive.

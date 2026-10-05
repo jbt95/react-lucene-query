@@ -3,12 +3,14 @@ import { rm } from 'node:fs/promises'
 // dist is generated and gitignored; clear it so old hashed chunks cannot enter the package.
 await rm('dist', { recursive: true, force: true })
 
-const entries = ['index', 'core', 'styled', 'codemirror', 'worker']
+const entries = ['index', 'core', 'query-json', 'postgres', 'styled', 'codemirror', 'worker']
 
 const result = await Bun.build({
   entrypoints: [
     'src/index.ts',
     'src/core.ts',
+    'src/query-json.ts',
+    'src/postgres.ts',
     'src/styled.tsx',
     'src/codemirror.tsx',
     'src/worker.ts',
@@ -41,6 +43,6 @@ if (!workerEntry.success) throw new AggregateError(workerEntry.logs, 'Worker ent
 
 // Thin public entries preserve RSC directives without shifting sourcemaps or duplicating context.
 for (const name of entries) {
-  const directive = name === 'core' || name === 'worker' ? '' : "'use client';\n"
+  const directive = ['index', 'styled', 'codemirror'].includes(name) ? "'use client';\n" : ''
   await Bun.write(`dist/${name}.js`, `${directive}export * from './_${name}.js';\n`)
 }

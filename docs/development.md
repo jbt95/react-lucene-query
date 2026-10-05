@@ -6,12 +6,13 @@
 bun run check-types    # native TypeScript 7
 bun run lint           # Oxlint, including anti-slop + anti-slop-effect
 bun run format:check   # oxfmt
-bun run test           # Bun + Happy DOM / Testing Library
+bun run test           # Bun + Happy DOM / Testing Library; PostgreSQL integration skipped by default
+bun run test:postgres  # optional parity check against a dedicated loopback instance on port 55432
 bun run build          # ESM, declarations/maps, compiled CSS
 bun run build:example
-bun run check:package   # installed tarball: core, React, optional CodeMirror
+bun run check:package   # installed tarball: core, query outputs, React, optional CodeMirror
 bun run example:backend # real loopback HTTP adapter
-bun run check          # all checks above
+bun run check          # default checks above; PostgreSQL remains opt-in
 bunx playwright install chromium
 bun run test:browser   # requires build + build:example; desktop, mobile, forced colors
 bun run check:all      # check plus browser regressions
@@ -24,7 +25,8 @@ These checks do not replace native Windows or screen-reader checks.
 
 The package check creates and removes a temporary application outside the repository.
 It installs the packed library, checks public declarations, renders React consumers, and builds isolated bundles.
-It checks the core without React and the main/styled entries without CodeMirror peers.
+It checks the core and optional JSON/PostgreSQL outputs without React, and the main/styled
+entries without CodeMirror peers.
 It then installs CodeMirror peers and checks shared React context.
 Registry access or a populated Bun cache is required.
 The React consumer uses server rendering; no Next.js or RSC framework check is claimed.
@@ -35,7 +37,7 @@ The language originated in a query-search POC and has been separated from applic
 
 ## Release preparation
 
-The package remains at `0.1.0`. Nothing has been published by this work.
+The package remains at `0.1.0`. Pushing changes to `main` does not publish the package to npm.
 Use SemVer and set the intended version in `package.json` before release verification.
 For pre-stable releases, use minor versions for API changes and patch versions for compatible fixes.
 The workflow does not change versions, commit files, or create tags.

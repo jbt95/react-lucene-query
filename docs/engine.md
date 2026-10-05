@@ -30,7 +30,9 @@ Construction decodes the field configuration with Effect Schema, so a JavaScript
 - Value suggestion counts are indexed lazily in a `WeakMap` per immutable records-array identity and field.
 - For large/remote datasets, provide `Query.Root.getSuggestions` or use `getSuggestions` with `SuggestionOptions.getValues` and `limit`; use `mode: 'async'` or the Effect adapter seam instead of filtering every record on every keystroke.
 - Facet counts run once per applied query over the records it already selects, so a filter panel costs one pass, not one pass per option.
-- The main, styled, CodeMirror, worker, and React-free core are independent public entries with shared internal chunks, so provider context and error-class identity remain consistent.
-- React entry wrappers preserve `'use client'`; the core and the worker entry remain usable on servers and workers.
+- The main, styled, CodeMirror, worker, core, JSON, and PostgreSQL modules are independent public entries with shared internal chunks, so provider context and error-class identity remain consistent.
+- React entry wrappers preserve `'use client'`; the core, worker, and query output entries remain React-free and usable on servers and workers.
+
+Query translation is available through optional React-free [JSON and PostgreSQL output modules](query-outputs.md). These produce query representations, not matching records, and leave the plain engine interface unchanged.
 
 Related: [Field definitions](fields.md) · [React-free Effect core](effect.md) · [Workers](workers.md)

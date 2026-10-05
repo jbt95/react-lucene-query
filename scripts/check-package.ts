@@ -246,7 +246,43 @@ Result.match(Effect.runSync(Effect.result(Effect.provideService(
 assert.equal(calls, previousCalls, 'Invalid input must not reach the adapter')
 `
 
+const outputs = `
+import assert from 'node:assert/strict'
+import { Result } from 'effect'
+import { parseQuery, QueryTranslationError, type QueryField } from 'react-lucene-query/core'
+import { fromQueryJson, toQueryJson, QueryTranslationError as JsonError } from 'react-lucene-query/query-json'
+import { toPostgres, QueryTranslationError as PostgresError } from 'react-lucene-query/postgres'
+import type { Item } from './data.ts'
+
+const fields: readonly QueryField<Item>[] = [
+  { key: 'id', label: 'Identifier', type: 'keyword', path: 'id' },
+  { key: 'units', label: 'Units', type: 'number', path: 'units' },
+]
+const parsed = parseQuery('id:ready AND units:[100 TO 200]', fields)
+const document = Result.getOrThrow(toQueryJson(parsed))
+assert.equal(document.version, 1)
+const decoded = Result.getOrThrow(fromQueryJson(JSON.parse(JSON.stringify(document)), fields))
+assert.deepEqual(decoded.node, parsed.node)
+const output = Result.getOrThrow(toPostgres(decoded, {
+  fields,
+  columns: { id: { column: 'id', type: 'text' }, units: { column: 'units', type: 'number' } },
+}))
+assert.deepEqual(output.params, ['ready', 100, 200])
+assert(output.sql.includes('$1::text') && output.sql.includes('$3::double precision'))
+assert.equal(JsonError, QueryTranslationError)
+assert.equal(PostgresError, QueryTranslationError)
+const rejection = toPostgres(parseQuery('id:rea*', fields), {
+  fields, columns: { id: { column: 'id', type: 'text' } },
+})
+assert(Result.isFailure(rejection) && rejection.failure instanceof QueryTranslationError)
+for (const entry of ['react-lucene-query/query-json', 'react-lucene-query/postgres']) {
+  const wrapper = await Bun.file(Bun.resolveSync(entry, import.meta.dir)).text()
+  assert(!wrapper.startsWith("'use client'"), 'Output entries must remain React-free')
+}
+`
+
 const components = `
+
 import { createQueryEngine, Query, type QueryEngine } from 'react-lucene-query'
 import { QuerySearchField } from 'react-lucene-query/styled'
 import { fields, records, type Item } from './data.ts'
@@ -315,13 +351,14 @@ import { join } from 'node:path'
 const name = process.argv[2]
 assert(name, 'Bundle entry is required')
 const installed = await realpath(join(import.meta.dir, 'node_modules', 'react-lucene-query'))
-for (const entry of ['react-lucene-query/core', 'react-lucene-query/worker', ...(name === 'core.ts' ? [] : ['react-lucene-query', 'react-lucene-query/styled'])]) {
+const headless = name === 'core.ts' || name === 'outputs.ts'
+for (const entry of ['react-lucene-query/core', 'react-lucene-query/worker', 'react-lucene-query/query-json', 'react-lucene-query/postgres', ...(headless ? [] : ['react-lucene-query', 'react-lucene-query/styled'])]) {
   const resolved = await realpath(Bun.resolveSync(entry, import.meta.dir))
   assert(resolved.startsWith(installed + '/dist/'), 'Entry must resolve from the installed archive: ' + resolved)
 }
 const result = await Bun.build({
   entrypoints: [join(import.meta.dir, name)],
-  target: name === 'core.ts' ? 'bun' : 'browser',
+  target: headless ? 'bun' : 'browser',
   outdir: join(import.meta.dir, 'bundled', name),
   packages: 'bundle',
 })
@@ -337,6 +374,7 @@ try {
     writeConsumerFile('data.ts', data),
     writeConsumerFile('core.ts', core),
     writeConsumerFile('worker.ts', worker),
+    writeConsumerFile('outputs.ts', outputs),
     writeConsumerFile('components.tsx', components),
     writeConsumerFile('minimal.tsx', minimal),
     writeConsumerFile('composed.tsx', composed),
@@ -346,10 +384,12 @@ try {
 
   await install({})
   await assertAbsent(['react', 'react-dom', ...Object.keys(codemirror)])
-  await checkTypes(['data.ts', 'core.ts', 'worker.ts'])
+  await checkTypes(['data.ts', 'core.ts', 'worker.ts', 'outputs.ts'])
   await run(consumer, process.execPath, 'run', 'core.ts')
   await run(consumer, process.execPath, 'run', 'worker.ts')
   await run(consumer, process.execPath, 'run', 'bundle.ts', 'core.ts')
+  await run(consumer, process.execPath, 'run', 'outputs.ts')
+  await run(consumer, process.execPath, 'run', 'bundle.ts', 'outputs.ts')
 
   await install(react)
   await assertAbsent(Object.keys(codemirror))

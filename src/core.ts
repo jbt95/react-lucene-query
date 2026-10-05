@@ -9,7 +9,7 @@ export {
 
 export { toQueryEngineAdapter } from './engine-adapter'
 
-export { QueryValueError, RegexSyntaxError } from './core/errors'
+export { QueryTranslationError, QueryValueError, RegexSyntaxError } from './core/errors'
 
 export {
   compileQuery,

@@ -4,6 +4,8 @@ Lucene-style query search for React. Define fields once to drive suggestions, va
 
 This filters your records; it is not an Apache Lucene index and does not provide scoring or ranking.
 
+Optional, React-free [query output modules](docs/query-outputs.md) translate validated queries into versioned JSON trees or parameterized PostgreSQL conditions. Your application owns backend execution and authorization.
+
 ## Try it locally
 
 Requires Bun 1.4.2 or newer.
@@ -83,17 +85,18 @@ Keep schemas and records immutable; replace the records array when data changes.
 
 ## Appendix
 
-| Guide                                      | Details                                                                          |
-| ------------------------------------------ | -------------------------------------------------------------------------------- |
-| [Getting started](docs/getting-started.md) | Local installation, dependencies, and the playground                             |
-| [Fields and analysis](docs/fields.md)      | Types, accessors, multi-valued fields, and custom analyzers                      |
-| [Query syntax](docs/query-syntax.md)       | Operators, phrases, patterns, ranges, and limits                                 |
-| [Query builders](docs/query-building.md)   | Safe escaping, grouping, and condition removal                                   |
-| [React integration](docs/react.md)         | Headless components, async search, URLs/history, facets, styling, and CodeMirror |
-| [Engine API](docs/engine.md)               | Parsing, filtering, suggestions, facets, and performance                         |
-| [Effect core](docs/effect.md)              | React-free execution, typed errors, and backend adapters                         |
-| [Workers](docs/workers.md)                 | Off-main-thread execution, portable schemas, and the protocol                    |
-| [Development](docs/development.md)         | Checks, package verification, tooling, and release preparation                   |
+| Guide                                      | Details                                                                           |
+| ------------------------------------------ | --------------------------------------------------------------------------------- |
+| [Getting started](docs/getting-started.md) | Local installation, dependencies, and the playground                              |
+| [Fields and analysis](docs/fields.md)      | Types, accessors, multi-valued fields, and custom analyzers                       |
+| [Query syntax](docs/query-syntax.md)       | Operators, phrases, patterns, ranges, and limits                                  |
+| [Query builders](docs/query-building.md)   | Safe escaping, grouping, and condition removal                                    |
+| [React integration](docs/react.md)         | Headless components, async search, URLs/history, facets, styling, and CodeMirror  |
+| [Engine API](docs/engine.md)               | Parsing, filtering, suggestions, facets, and performance                          |
+| [Query outputs](docs/query-outputs.md)     | Versioned JSON trees, parameterized PostgreSQL conditions, and supported features |
+| [Effect core](docs/effect.md)              | React-free execution, typed errors, and backend adapters                          |
+| [Workers](docs/workers.md)                 | Off-main-thread execution, portable schemas, and the protocol                     |
+| [Development](docs/development.md)         | Checks, package verification, tooling, and release preparation                    |
 
 ## License
 

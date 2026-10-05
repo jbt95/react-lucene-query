@@ -31,6 +31,14 @@
       "types": "./dist/core.d.ts",
       "import": "./dist/core.js"
     },
+    "./query-json": {
+      "types": "./dist/query-json.d.ts",
+      "import": "./dist/query-json.js"
+    },
+    "./postgres": {
+      "types": "./dist/postgres.d.ts",
+      "import": "./dist/postgres.js"
+    },
     "./styled": {
       "types": "./dist/styled.d.ts",
       "import": "./dist/styled.js"
@@ -52,6 +60,7 @@
     "build:example": "vite build",
     "preview:example": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
     "test": "bun test ./tests",
+    "test:postgres": "QUERY_TEST_POSTGRES_PORT=55432 bun test ./tests/postgres.integration.test.ts",
     "test:browser": "playwright test",
     "check:package": "bun run scripts/check-package.ts",
     "example:backend": "bun run example/backend.ts",
