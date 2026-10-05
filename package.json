@@ -1,6 +1,6 @@
 {
   "name": "react-lucene-query",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Composable, schema-driven Lucene-style query search for React.",
   "homepage": "https://github.com/jbt95/react-lucene-query#readme",
   "bugs": {
