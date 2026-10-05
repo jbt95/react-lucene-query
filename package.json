@@ -13,6 +13,7 @@
   },
   "files": [
     "dist",
+    "docs",
     "src",
     "README.md",
     "LICENSE"
