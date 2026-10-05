@@ -1,10 +1,35 @@
 # react-lucene-query
 
+[![npm version](https://img.shields.io/npm/v/react-lucene-query?label=npm&color=cb3837&logo=npm)](https://www.npmjs.com/package/react-lucene-query)
+[![CI](https://img.shields.io/github/actions/workflow/status/jbt95/react-lucene-query/ci.yml?label=CI&logo=github)](https://github.com/jbt95/react-lucene-query/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![React](https://img.shields.io/badge/react-18%20%7C%2019-61dafb?logo=react)](https://react.dev)
+[![Bun](https://img.shields.io/badge/bun-1.4.2%2B-black?logo=bun)](https://bun.sh)
+[![Types](https://img.shields.io/badge/types-TypeScript-3178C6?logo=typescript)](https://www.typescriptlang.org)
+[![Bundle](https://img.shields.io/badge/size-637%20kB-informational)](https://www.npmjs.com/package/react-lucene-query)
+[![Effort](https://img.shields.io/badge/maintained-yes-brightgreen)](https://github.com/jbt95/react-lucene-query)
+
+[Quick start](#quick-start) · [Fields](docs/fields.md) · [Query syntax](docs/query-syntax.md) · [React integration](docs/react.md) · [Query outputs](docs/query-outputs.md) · [All guides](#appendix)
+
 Lucene-style query search for React. Define fields once to drive suggestions, validation, and filtering. Use the ready-made search field below, or compose your own headless UI.
 
 This filters your records; it is not an Apache Lucene index and does not provide scoring or ranking.
 
 Optional, React-free [query output modules](docs/query-outputs.md) translate validated queries into versioned JSON trees or parameterized PostgreSQL conditions. Your application owns backend execution and authorization.
+
+## Install
+
+```sh
+npm install react-lucene-query
+```
+
+Then add the stylesheet once, if you use the styled editor:
+
+```ts
+import 'react-lucene-query/styles.css'
+```
+
+React 18.3 or 19 is required. CodeMirror is optional and only needed for the `react-lucene-query/codemirror` entry point. See [getting started](docs/getting-started.md) for details.
 
 ## Try it locally
 
@@ -17,7 +42,7 @@ bun install
 bun run dev
 ```
 
-The playground includes styled, headless, and CodeMirror editors. The package is not yet published to npm; see [local package installation](docs/getting-started.md) to use it in another project. React 18.3 or 19 is required.
+The playground includes styled, headless, and CodeMirror editors. See [local package installation](docs/getting-started.md) to work against a checkout instead of the npm release. React 18.3 or 19 is required.
 
 ## Quick start
 
