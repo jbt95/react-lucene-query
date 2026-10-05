@@ -10,13 +10,15 @@ const QueryCodeMirror = lazy(() =>
   import('../src/codemirror').then((module) => ({ default: module.QueryCodeMirror })),
 )
 
-const engine = createQueryEngine({ fields, today: '2026-10-24' })
+const engine = createQueryEngine({ fields })
 
 const presets = [
-  'status:ready AND units:>100',
+  'status:ready AND units:[100 TO 200]',
   'carrier:"North Star"',
-  'due:[today TO today+1]',
-  'NOT status:delivered',
+  'due:[2026-10-24 TO 2026-10-25]',
+  'tags:priority AND eta:[2026-11 TO *]',
+  '*:* AND NOT status:delivered',
+  'carrier:/n.*h/ OR carrier:atlas~1',
 ]
 
 function App() {
@@ -74,7 +76,7 @@ function App() {
           <QuerySearchField
             {...root}
             label="Query"
-            placeholder="Try status:ready AND units:>100"
+            placeholder="Try status:ready AND units:[100 TO 200]"
             summary={
               search.isPending
                 ? 'Draft — press Enter or Search to apply.'
@@ -102,6 +104,8 @@ function App() {
               <Query.Clear />
             </div>
             {mode === 'headless' ? <Query.Suggestions className="custom-suggestions" /> : null}
+            <Query.Chips className="applied-chips" />
+            <Query.Facets field="status" className="applied-facets" />
             <Query.Diagnostics className="custom-diagnostics" />
           </Query.Root>
         )}
@@ -167,32 +171,32 @@ function App() {
       <aside className="syntax" aria-labelledby="syntax-title">
         <div>
           <p className="eyebrow">02 / Learn</p>
-          <h2 id="syntax-title">Small grammar. Useful combinations.</h2>
+          <h2 id="syntax-title">Lucene syntax. Useful combinations.</h2>
         </div>
         <dl>
           <div>
             <dt>
               <code>field:value</code>
             </dt>
-            <dd>Text, enum, boolean, number, or date.</dd>
+            <dd>Search analyzed text or exact keyword values.</dd>
           </div>
           <div>
             <dt>
               <code>AND · OR · NOT</code>
             </dt>
-            <dd>Combine terms. Group with parentheses.</dd>
+            <dd>Use OR between adjacent terms. Group with parentheses.</dd>
           </div>
           <div>
             <dt>
-              <code>&gt; · &lt;= · [a TO b]</code>
+              <code>[a TO b] · {'{a TO b}'}</code>
             </dt>
-            <dd>Compare values or choose an inclusive range.</dd>
+            <dd>Select an inclusive or exclusive lexical range.</dd>
           </div>
           <div>
             <dt>
-              <code>today+7</code>
+              <code>term* · term~1 · /pattern/ · ^2</code>
             </dt>
-            <dd>Relative days. This demo fixes today to 2026-10-24.</dd>
+            <dd>Use wildcards, fuzzy terms, regular expressions, or boosts.</dd>
           </div>
         </dl>
       </aside>

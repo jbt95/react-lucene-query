@@ -15,6 +15,11 @@ export interface UseQueryEditorOptions {
   readonly getSuggestions: (value: string, caret: number) => SuggestionList | undefined
 }
 
+/** Wraps in both directions; an empty selection moves to the last item going up. */
+function nextHighlightIndex(activeIndex: number, length: number, down: boolean): number {
+  return down ? (activeIndex + 1) % length : (activeIndex <= 0 ? length : activeIndex) - 1
+}
+
 export function useQueryEditor({
   value,
   parsed,
@@ -51,18 +56,23 @@ export function useQueryEditor({
 
   const hasError = hasErrors(parsed)
 
+  // The caret must move after React commits the new text, so a handler records the
+  // request and this effect applies it. Callers only record a request when the text
+  // or caret really changes, so a request can never outlive the update that justified it.
   useEffect(() => {
-    if (pendingCaret.current !== undefined && inputRef.current) {
-      inputRef.current.setSelectionRange(pendingCaret.current, pendingCaret.current)
-      pendingCaret.current = undefined
-    }
+    const requested = pendingCaret.current
+
+    if (requested === undefined) return
+
+    pendingCaret.current = undefined
+    inputRef.current?.setSelectionRange(requested, requested)
   }, [value, caret])
 
   const accept = (item: Suggestion) => {
     if (!suggestions) return
     const next = applySuggestion(value, suggestions, item)
     inputRef.current?.focus()
-    pendingCaret.current = next.caret
+    pendingCaret.current = next.value !== value || next.caret !== caret ? next.caret : undefined
     onValueChange(next.value)
     setCaret(next.caret)
     setHighlight(undefined)
@@ -83,7 +93,7 @@ export function useQueryEditor({
     inputRef.current?.focus()
     onValueChange('')
     onSubmit('')
-    pendingCaret.current = 0
+    pendingCaret.current = value !== '' || caret !== 0 ? 0 : undefined
     setCaret(0)
     setRejectedValue(undefined)
     setDismissed(undefined)
@@ -104,13 +114,10 @@ export function useQueryEditor({
     if (open) {
       if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
         event.preventDefault()
-
-        const index =
-          event.key === 'ArrowDown'
-            ? (activeIndex + 1) % items.length
-            : (activeIndex <= 0 ? items.length : activeIndex) - 1
-
-        setHighlight({ key, index })
+        setHighlight({
+          key,
+          index: nextHighlightIndex(activeIndex, items.length, event.key === 'ArrowDown'),
+        })
 
         return
       }

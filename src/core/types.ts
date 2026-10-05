@@ -3,34 +3,34 @@ export type TokenKind =
   | 'colon'
   | 'text'
   | 'quoted'
+  | 'regex'
   | 'operator'
+  | 'plus'
   | 'minus'
   | 'lparen'
   | 'rparen'
   | 'lbracket'
   | 'rbracket'
-  | 'compare'
+  | 'lbrace'
+  | 'rbrace'
+  | 'tilde'
+  | 'caret'
 
 export type QueryToken = {
   readonly kind: TokenKind
   readonly text: string
   readonly start: number
   readonly end: number
-  // Only meaningful for `quoted`: false while the closing quote has not been typed yet.
+  // False while the closing quote or regex delimiter has not been typed yet.
   readonly closed?: boolean
 }
 
-// What a token means once the parser has seen it in context. The highlighter colours by role, so
-// the same word reads differently as a field name, a number, or a stray token.
+// Contextual token roles drive the editor highlighter.
 export type TokenRole =
   | 'field'
   | 'field-unknown'
   | 'colon'
   | 'value-text'
-  | 'value-number'
-  | 'value-date'
-  | 'value-boolean'
-  | 'value-enum'
   | 'value-invalid'
   | 'free-text'
   | 'operator'
@@ -38,27 +38,47 @@ export type TokenRole =
   | 'paren'
   | 'bracket'
   | 'range-to'
-  | 'compare'
+  | 'modifier'
+  | 'regex'
+  | 'wildcard'
   | 'unexpected'
-
-export type CompareOperator = '>' | '>=' | '<' | '<='
 
 export type QueryValue =
   | { readonly kind: 'term'; readonly raw: string }
-  | { readonly kind: 'compare'; readonly operator: CompareOperator; readonly raw: string }
-  | { readonly kind: 'range'; readonly from: string; readonly to: string }
+  | { readonly kind: 'phrase'; readonly raw: string; readonly proximity?: number }
+  | { readonly kind: 'wildcard'; readonly raw: string }
+  | { readonly kind: 'fuzzy'; readonly raw: string; readonly distance?: number }
+  | { readonly kind: 'regex'; readonly raw: string }
+  | {
+      readonly kind: 'range'
+      readonly from: string | undefined
+      readonly to: string | undefined
+      readonly includeLower: boolean
+      readonly includeUpper: boolean
+    }
 
-// Several values on one term (`wot:(Air OR Sea)`) match when any of them does.
+export type QueryClause = {
+  readonly occur: 'must' | 'should' | 'must-not'
+  readonly node: QueryNode
+}
+
 export type QueryNode =
   | {
       readonly type: 'term'
       readonly field: string | undefined
-      readonly values: readonly QueryValue[]
+      readonly value: QueryValue
+      readonly boost?: number
     }
-  | { readonly type: 'not'; readonly node: QueryNode }
-  | { readonly type: 'and' | 'or'; readonly children: readonly QueryNode[] }
+  | {
+      readonly type: 'boolean'
+      readonly clauses: readonly QueryClause[]
+      readonly boost?: number
+    }
 
-export type DiagnosticSeverity = 'error' | 'warning'
+/** The one list of severities. Both the type and the Schema that validates it derive from it. */
+export const DIAGNOSTIC_SEVERITIES = ['error', 'warning'] as const
+
+export type DiagnosticSeverity = (typeof DIAGNOSTIC_SEVERITIES)[number]
 
 export type QueryDiagnostic = {
   readonly start: number

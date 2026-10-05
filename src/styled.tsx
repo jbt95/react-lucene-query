@@ -1,8 +1,8 @@
 // scripts/build.ts emits the published 'use client' boundary.
 
 import { useId } from 'react'
-import { Query, type QueryRootProps } from './query'
-import { useQueryContext } from './query-context'
+import { Query, type QueryRootProps } from './input'
+import { useQueryContext } from './context'
 
 export interface QuerySearchFieldProps<T> extends Omit<QueryRootProps<T>, 'children'> {
   readonly label: string

@@ -26,7 +26,7 @@ import {
   placeholder as placeholderExtension,
 } from '@codemirror/view'
 import { applySuggestion } from './core'
-import { useQueryContext, type QueryContextValue } from './query-context'
+import { useQueryContext, type QueryContextValue } from './context'
 
 const external = Annotation.define<boolean>()
 

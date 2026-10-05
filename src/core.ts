@@ -5,15 +5,49 @@ export {
   type QueryEngineOptions,
   type CompiledQuery,
   type SearchAdapter,
-} from './core/query-engine'
+} from './core/engine'
 
-export { toQueryEngineAdapter } from './query-engine-adapter'
+export { toQueryEngineAdapter } from './engine-adapter'
 
-export { compileQuery, filterRecords, matchesQuery } from './core/query-evaluate'
+export { QueryValueError, RegexSyntaxError } from './core/errors'
 
-export { parseQuery, hasErrors } from './core/query-parser'
+export {
+  compileQuery,
+  tryCompileQuery,
+  filterRecords,
+  matchesQuery,
+  scalarText,
+} from './core/evaluate'
 
-export { tokenize, tokenValue } from './core/query-tokenizer'
+export { facetCounts, type FacetCounts, type FacetOptions } from './core/facets'
+
+export { fieldValues, readPath, findQueryField, closestFieldKey } from './core/fields'
+
+export {
+  listClauses,
+  removeClause,
+  toggleClause,
+  type Clause,
+  type ClauseSelector,
+} from './core/clauses'
+
+export {
+  and,
+  escapeFieldName,
+  escapeTerm,
+  fieldClause,
+  not,
+  or,
+  type FieldClause,
+} from './core/build'
+
+export { parseQuery, hasErrors, type ParseOptions, type UnknownFieldMode } from './core/parser'
+
+export { stringifyQuery } from './core/stringify'
+
+export { tokenize, tokenValue } from './core/tokenizer'
+
+export { parseDate, parseNumber, type DateWindow, type DatePrecision } from './core/analysis'
 
 export {
   getSuggestions,
@@ -22,19 +56,19 @@ export {
   type SuggestionList,
   type SuggestionKind,
   type SuggestionOptions,
-} from './core/query-suggest'
+} from './core/suggest'
 
-export type { QueryField, QueryFieldType, QueryFieldValue } from './core/query-fields'
+export type { QueryField, QueryFieldType, QueryFieldValue, QueryFieldScalar } from './core/fields'
 
 export type {
   ParsedQuery,
   QueryDiagnostic,
   QueryNode,
+  QueryClause,
   QueryToken,
   QueryValue,
   TokenRole,
   QueryTermSpan,
-  CompareOperator,
   DiagnosticSeverity,
   TokenKind,
-} from './core/query-types'
+} from './core/types'

@@ -1,0 +1,45 @@
+name: Release verification
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Package version to verify (must match package.json)
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: release-verification
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check requested version
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: |
+          bun -e 'const { version } = await Bun.file("package.json").json(); if (version !== process.env.RELEASE_VERSION) throw new Error("Requested version does not match package.json")'
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
+      - run: bun run check:all
+      - run: bun pm pack --ignore-scripts --filename release.tgz
+      - run: npm publish ./release.tgz --dry-run --ignore-scripts --access public
+      - uses: actions/upload-artifact@v4
+        with:
+          name: react-lucene-query-${{ inputs.version }}
+          path: release.tgz
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: release-browser-test-results
+          path: test-results/
+          if-no-files-found: ignore

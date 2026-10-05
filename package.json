@@ -38,6 +38,10 @@
       "types": "./dist/codemirror.d.ts",
       "import": "./dist/codemirror.js"
     },
+    "./worker": {
+      "types": "./dist/worker.d.ts",
+      "import": "./dist/worker.js"
+    },
     "./styles.css": "./dist/styles.css"
   },
   "scripts": {
@@ -45,16 +49,20 @@
     "build": "bun run scripts/build.ts && tsc -p tsconfig.build.json && bun run build:css",
     "build:css": "tailwindcss -i src/styles.css -o dist/styles.css --minify",
     "build:example": "vite build",
+    "preview:example": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
     "test": "bun test ./tests",
+    "test:browser": "playwright test",
+    "check:package": "bun run scripts/check-package.ts",
+    "example:backend": "bun run example/backend.ts",
     "check-types": "tsc --noEmit",
     "lint": "oxlint --deny-warnings",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
-    "check": "bun run check-types && bun run lint && bun run format:check && bun run test && bun run build && bun run build:example",
+    "check": "bun run check-types && bun run lint && bun run format:check && bun run test && bun run build && bun run build:example && bun run check:package && bun run example:backend",
+    "check:all": "bun run check && bun run test:browser",
     "prepack": "bun run build"
   },
   "dependencies": {
-    "@js-temporal/polyfill": "^0.5.1",
     "effect": "^4.0.0"
   },
   "devDependencies": {
@@ -65,6 +73,7 @@
     "@codemirror/view": "^6.38.0",
     "@happy-dom/global-registrator": "^20.0.0",
     "@oxlint/plugins": "1.86.0",
+    "@playwright/test": "1.63.0",
     "@tailwindcss/cli": "^4.1.0",
     "@tailwindcss/vite": "^4.1.0",
     "@testing-library/react": "^16.3.0",

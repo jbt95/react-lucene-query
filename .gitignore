@@ -5,3 +5,6 @@ coverage/
 *.tgz
 .playwright-mcp/
 .impeccable/
+playwright-report/
+test-results/
+.pi

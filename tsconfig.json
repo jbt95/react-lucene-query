@@ -14,5 +14,13 @@
     "types": ["bun"],
     "allowImportingTsExtensions": true
   },
-  "include": ["src", "tests", "scripts", "example", "vite.config.ts"]
+  "include": [
+    "src",
+    "tests",
+    "browser-tests",
+    "scripts",
+    "example",
+    "vite.config.ts",
+    "playwright.config.ts"
+  ]
 }

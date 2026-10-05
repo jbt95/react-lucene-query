@@ -7,7 +7,7 @@ import { fields, records } from './fixtures'
 
 afterEach(cleanup)
 
-const engine = createQueryEngine({ fields, today: '2026-10-24' })
+const engine = createQueryEngine({ fields })
 
 function Fixture({ defaultValue = '' }: { readonly defaultValue?: string }) {
   const search = useQuerySearch({ engine, records, defaultValue })
@@ -40,7 +40,7 @@ describe('search state', () => {
     })
     expect(result.current.matches.length).toBe(2)
     act(() => {
-      expect(result.current.apply('units:invalid')).toBe(false)
+      expect(result.current.apply('units:[100 TO]')).toBe(false)
     })
     expect(result.current.applied).toBe('status:ready')
     expect(result.current.matches.length).toBe(2)
@@ -146,14 +146,14 @@ describe('composable editor', () => {
   test('invalid submission is announced and leaves the applied query unchanged', () => {
     render(<Fixture />)
     const input = screen.getByRole('combobox')
-    fireEvent.change(input, { target: { value: 'units:bad' } })
+    fireEvent.change(input, { target: { value: 'units:[100 TO]' } })
     fireEvent.click(screen.getByRole('button', { name: 'Search' }))
     expect(input.getAttribute('aria-invalid')).toBe('true')
     expect(screen.getByTestId('applied').textContent).toBe('')
     expect(screen.getByTestId('count').textContent).toBe('4')
     expect(
       document.getElementById(input.getAttribute('aria-describedby') ?? '')?.textContent,
-    ).toContain('number')
+    ).toBeTruthy()
   })
 
   test('clear applies the empty query and restores all records', () => {
@@ -162,6 +162,31 @@ describe('composable editor', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Clear' }))
     expect(screen.getByTestId('count').textContent).toBe('4')
     expect(screen.getByTestId('applied').textContent).toBe('')
+  })
+
+  test('clearing an already empty editor leaves no pending caret for the next keystroke', () => {
+    render(<Fixture defaultValue="" />)
+    // SAFETY: the styled field renders a real textarea, so selectionStart is readable.
+    const input = screen.getByRole('combobox') as HTMLTextAreaElement
+
+    fireEvent.click(screen.getByRole('button', { name: 'Clear' }))
+
+    // The caret request must not survive a clear that changes neither text nor caret,
+    // otherwise the next keystroke would be undone by a stale selection.
+    fireEvent.change(input, { target: { value: 'status:ready' } })
+    expect(input.selectionStart).toBe('status:ready'.length)
+  })
+
+  test('accepting a completion moves the caret to the end of the inserted value', () => {
+    render(<Fixture />)
+    // SAFETY: the styled field renders a real textarea, so selectionStart is readable.
+    const input = screen.getByRole('combobox') as HTMLTextAreaElement
+
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: 'status:re', selectionStart: 10 } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+    expect(input.value.length).toBeGreaterThan('status:re'.length)
+    expect(input.selectionStart).toBe(input.value.length)
   })
 
   test('IME Enter does not submit', () => {

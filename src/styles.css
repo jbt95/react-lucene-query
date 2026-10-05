@@ -25,8 +25,7 @@
     --rlq-error: #b42318;
     --rlq-field-color: #6d28d9;
     --rlq-value-color: #166534;
-    --rlq-number-color: #92400e;
-    --rlq-boolean-color: #0369a1;
+    --rlq-modifier-color: #92400e;
     color: var(--rlq-text);
     font-family: inherit;
   }
@@ -81,16 +80,12 @@
     color: var(--rlq-field-color);
   }
   .rlq-highlight [data-role='value-text'],
-  .rlq-highlight [data-role='value-enum'] {
+  .rlq-highlight [data-role='regex'],
+  .rlq-highlight [data-role='wildcard'] {
     color: var(--rlq-value-color);
   }
-  .rlq-highlight [data-role='value-number'],
-  .rlq-highlight [data-role='value-date'],
-  .rlq-highlight [data-role='compare'] {
-    color: var(--rlq-number-color);
-  }
-  .rlq-highlight [data-role='value-boolean'] {
-    color: var(--rlq-boolean-color);
+  .rlq-highlight [data-role='modifier'] {
+    color: var(--rlq-modifier-color);
   }
   .rlq-highlight [data-role='field-unknown'],
   .rlq-highlight [data-role='value-invalid'],
@@ -109,7 +104,7 @@
     .rlq-field textarea {
       color: CanvasText;
     }
-    .rlq-highlight {
+    .rlq-highlight[aria-hidden='true'] {
       visibility: hidden;
     }
   }
