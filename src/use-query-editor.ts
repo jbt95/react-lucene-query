@@ -34,12 +34,14 @@ export function useQueryEditor({
     inputRef.current = node
   }, [])
 
-  const pendingCaret = useRef<number>()
+  // Explicit `| undefined` plus an initial argument: React 19 removed the no-argument
+  // useRef/useState overloads, and these refs and states are all genuinely optional.
+  const pendingCaret = useRef<number | undefined>(undefined)
   const [caret, setCaret] = useState(value.length)
   const [focused, setFocused] = useState(false)
-  const [dismissed, setDismissed] = useState<string>()
-  const [highlight, setHighlight] = useState<{ key: string; index: number }>()
-  const [rejectedValue, setRejectedValue] = useState<string>()
+  const [dismissed, setDismissed] = useState<string | undefined>(undefined)
+  const [highlight, setHighlight] = useState<{ key: string; index: number } | undefined>(undefined)
+  const [rejectedValue, setRejectedValue] = useState<string | undefined>(undefined)
   const key = `${value}\u0000${caret}`
 
   const suggestions = useMemo(

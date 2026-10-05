@@ -66,7 +66,7 @@ export function QueryCodeMirror({
 }: QueryCodeMirrorProps) {
   const editor = useQueryContext()
   const host = useRef<HTMLDivElement>(null)
-  const view = useRef<EditorView>()
+  const view = useRef<EditorView | undefined>(undefined)
   const latest = useRef(editor)
   const configuration = useRef(new Compartment())
 

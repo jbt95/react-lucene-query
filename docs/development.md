@@ -13,10 +13,19 @@ bun run build:example
 bun run check:package   # installed tarball: core, query outputs, React, optional CodeMirror
 bun run example:backend # real loopback HTTP adapter
 bun run check          # default checks above; PostgreSQL remains opt-in
+bun run check:react-peer 19   # assert a React major is inside the published peer range
 bunx playwright install chromium
 bun run test:browser   # requires build + build:example; desktop, mobile, forced colors
 bun run check:all      # check plus browser regressions
 ```
+
+CI also runs a `react-peers` matrix that installs React 18.3 and React 19 and
+runs typecheck, lint, and unit tests against each. Both majors matter: React 19
+removed the no-argument `useRef`/`useState` overloads that React 18 types still
+accept, so a green React 18 typecheck does not imply a green React 19 one.
+`scripts/check-react-peer.ts` fails the job if the matrix is ever pointed at a
+React major that `peerDependencies.react` does not cover, so the published range
+cannot claim more than CI verifies.
 
 Browser checks run against the production playground.
 They cover completion, draft/application state, clear, external changes, keyboard focus, and textarea/mirror geometry.

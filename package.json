@@ -63,6 +63,7 @@
     "test:postgres": "QUERY_TEST_POSTGRES_PORT=55432 bun test ./tests/postgres.integration.test.ts",
     "test:browser": "playwright test",
     "check:package": "bun run scripts/check-package.ts",
+    "check:react-peer": "bun run scripts/check-react-peer.ts",
     "example:backend": "bun run example/backend.ts",
     "check-types": "tsc --noEmit",
     "lint": "oxlint --deny-warnings",

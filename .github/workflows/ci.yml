@@ -22,3 +22,38 @@ jobs:
           name: browser-test-results
           path: test-results/
           if-no-files-found: ignore
+
+  # peerDependencies advertise React 18.3 and 19, so both majors are verified.
+  # Types and runtime are checked together: React 19 removed the no-argument
+  # useRef/useState overloads, which React 18 types still accept.
+  react-peers:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        react: ['18.3.1', '19']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - name: Resolve the latest React 19 release
+        if: matrix.react == '19'
+        run: |
+          RESOLVED=$(bunx npm view react@^19 version --json | bun -e 'const v = await Bun.stdin.json(); console.log([].concat(v).at(-1))')
+          echo "REACT_VERSION=$RESOLVED" >> "$GITHUB_ENV"
+      - name: Check the advertised peer range
+        run: bun run scripts/check-react-peer.ts "${{ matrix.react == '19' && '19' || '18.3.1' }}"
+      - run: bun install --frozen-lockfile
+      - name: Install the peer React major
+        run: |
+          if [ "${{ matrix.react }}" = '19' ]; then
+            bun add --dev --ignore-scripts "react@$REACT_VERSION" "react-dom@$REACT_VERSION" \
+              "@types/react@^19" "@types/react-dom@^19"
+          else
+            bun add --dev --ignore-scripts "react@^18.3.0" "react-dom@^18.3.0" \
+              "@types/react@^18" "@types/react-dom@^18"
+          fi
+      - run: bun run check-types
+      - run: bun run lint
+      - run: bun run test
